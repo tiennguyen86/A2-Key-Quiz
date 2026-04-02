@@ -458,7 +458,7 @@ const quizData = {
             id: "w1",
             title: "Writing Part 6 — Email",
             description: "Write an email to your friend. Write 25 words or more.",
-            skill: "reading",
+            skill: "writing",
             questions: [
                 {
                     id: "w1q31",
@@ -485,7 +485,7 @@ const quizData = {
             id: "w2",
             title: "Writing Part 7 — Story",
             description: "Look at the three pictures and write the story. Write 35 words or more.",
-            skill: "reading",
+            skill: "writing",
             questions: [
                 {
                     id: "w2q32",
