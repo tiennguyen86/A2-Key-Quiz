@@ -125,20 +125,37 @@
     }
 
     // Bắt sự kiện Click để phát âm thanh
+    // Bắt sự kiện Click để phát âm thanh
     document.addEventListener('click', (e) => {
-        initAudio(); // Khởi tạo audio khi user tương tác lần đầu
+        initAudio(); // Khởi tạo audio khi user tương tác
 
-        // Bắt click chọn đáp án
+        // 1. BẮT ÂM THANH CHỌN ĐÁP ÁN
         const optionBtn = e.target.closest('.option-btn');
         if (optionBtn && !optionBtn.classList.contains('locked')) {
-            // Đợi 50ms để logic check đáp án của quiz.html chạy xong và gán class 'correct'/'wrong'
-            setTimeout(() => {
-                if (optionBtn.classList.contains('correct')) playTing();
-                else if (optionBtn.classList.contains('wrong')) playBup();
-            }, 50);
+            // Lấy ID câu hỏi từ thuộc tính onclick (VD: App.selectMCQ('r1q1','A'))
+            const onclickAttr = optionBtn.getAttribute('onclick') || '';
+            const match = onclickAttr.match(/'([^']+)'/); 
+            
+            if (match) {
+                const qId = match[1];
+                // Đợi 50ms để giao diện vẽ xong màu Xanh/Đỏ
+                setTimeout(() => {
+                    const newCard = document.getElementById('q_' + qId);
+                    if (newCard) {
+                        // Nếu thẻ mới có nút bị Đỏ -> Sai
+                        if (newCard.querySelector('.option-btn.wrong')) {
+                            playBup();
+                        } 
+                        // Nếu có Xanh mà không có Đỏ -> Đúng
+                        else if (newCard.querySelector('.option-btn.correct')) {
+                            playTing();
+                        }
+                    }
+                }, 50);
+            }
         }
 
-        // Bắt click nút Finish (chuyển sang trang kết quả)
+        // 2. BẮT ÂM THANH NÚT FINISH
         const finishBtn = e.target.closest('#btnNext');
         if (finishBtn && finishBtn.innerText.includes('Finish')) {
             playFinish();
