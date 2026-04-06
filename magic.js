@@ -1,19 +1,19 @@
 /**
  * ============================================================
- * MAGIC.JS — HIỆU ỨNG ÂM THANH, 3D, CHUYỂN CẢNH & CYBERPUNK
- * Cắm vào là chạy, không cần sửa code cũ!
+ * MAGIC.JS V3 — ULTIMATE EDITION (BUG FIXED)
+ * Âm thanh Studio, 3D Mobile, Pháo hoa nổ tung & Cyberpunk
  * ============================================================
  */
 
-(function initMagic() {
+(function initMagicV3() {
     'use strict';
 
     /* =========================================
-       1. THEME CYBERPUNK (NEON PHÁT SÁNG)
+       1. THEME CYBERPUNK & CSS ANIMATIONS
        ========================================= */
-    const cyberpunkStyles = document.createElement('style');
-    cyberpunkStyles.innerHTML = `
-        /* Theme Cyberpunk Variables */
+    const magicStyles = document.createElement('style');
+    magicStyles.innerHTML = `
+        /* Theme Cyberpunk */
         [data-theme="cyberpunk"] {
             --bg-primary: #09090b; --bg-secondary: #12121a; --bg-card: #181825; --bg-card-hover: #1f1f2e;
             --bg-input: #12121a; --bg-accent: rgba(0, 255, 255, 0.1); 
@@ -25,175 +25,229 @@
             --accent-warning: #ffea00; --accent-info: #bc13fe;
             font-family: 'JetBrains Mono', monospace;
         }
-
-        /* Hiệu ứng Neon cho Cyberpunk */
         [data-theme="cyberpunk"] .card, [data-theme="cyberpunk"] .passage-box {
             border: 1px solid var(--border-color);
             box-shadow: 0 0 10px rgba(0,255,255,0.2), inset 0 0 10px rgba(0,255,255,0.05);
             border-radius: 8px;
         }
-        [data-theme="cyberpunk"] .btn-primary {
-            background: transparent; color: var(--accent-primary);
-            border: 1px solid var(--accent-primary);
-            box-shadow: 0 0 15px rgba(0,255,255,0.4);
-            text-transform: uppercase; letter-spacing: 2px; border-radius: 4px;
-        }
-        [data-theme="cyberpunk"] .btn-primary:hover {
-            background: var(--accent-primary); color: #000; box-shadow: 0 0 25px rgba(0,255,255,0.8);
-        }
+        [data-theme="cyberpunk"] .btn-primary { background: transparent; color: var(--accent-primary); border: 1px solid var(--accent-primary); box-shadow: 0 0 15px rgba(0,255,255,0.4); text-transform: uppercase; letter-spacing: 2px; }
+        [data-theme="cyberpunk"] .btn-primary:hover { background: var(--accent-primary); color: #000; box-shadow: 0 0 25px rgba(0,255,255,0.8); }
         [data-theme="cyberpunk"] .option-btn { border-radius: 4px; }
         [data-theme="cyberpunk"] .option-btn.selected { box-shadow: 0 0 15px rgba(0,255,255,0.4); }
         [data-theme="cyberpunk"] .option-btn.correct { box-shadow: 0 0 15px rgba(57,255,20,0.5); }
         [data-theme="cyberpunk"] .option-btn.wrong { box-shadow: 0 0 15px rgba(255,0,60,0.5); }
 
-        /* =========================================
-           2. HIỆU ỨNG CHUYỂN CẢNH (SMOOTH TRANSITION)
-           ========================================= */
-        @keyframes slideInRight {
-            0% { transform: translateX(30px); opacity: 0; }
+        /* Hiệu ứng chuyển cảnh (Smooth Transition) */
+        @keyframes iosSlideIn {
+            0% { transform: translateX(50px); opacity: 0; }
             100% { transform: translateX(0); opacity: 1; }
         }
-        .card { animation: slideInRight 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) both !important; }
-        
-        /* =========================================
-           3. CARD 3D TILT EFFECT
-           ========================================= */
-        .card { transition: transform 0.1s ease-out, box-shadow 0.1s ease-out !important; transform-style: preserve-3d; perspective: 1000px; }
-    `;
-    document.head.appendChild(cyberpunkStyles);
+        #quizBody { animation: iosSlideIn 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
+        .card { transition: transform 0.15s ease-out, box-shadow 0.15s ease-out !important; transform-style: preserve-3d; perspective: 1000px; }
 
-    // Chèn thêm nút Theme Cyberpunk vào Navbar
+        /* Pháo hoa nổ (Explosive Confetti) */
+        .magic-confetti {
+            position: fixed; width: 8px; height: 8px; border-radius: 50%; pointer-events: none; z-index: 99999;
+            animation: explode 1s cubic-bezier(0.1, 0.8, 0.3, 1) forwards;
+        }
+        @keyframes explode {
+            0% { transform: translate(0, 0) scale(1); opacity: 1; }
+            100% { transform: translate(var(--tx), var(--ty)) scale(0); opacity: 0; }
+        }
+    `;
+    document.head.appendChild(magicStyles);
+
+    // Chèn nút Cyberpunk
     document.addEventListener('DOMContentLoaded', () => {
         const switcher = document.getElementById('themeSwitcher');
-        if (switcher) {
+        if (switcher && !document.querySelector('[data-theme="cyberpunk"]')) {
             const cyberBtn = document.createElement('button');
             cyberBtn.className = 'theme-btn';
             cyberBtn.dataset.theme = 'cyberpunk';
             cyberBtn.innerText = '⚡';
-            cyberBtn.onclick = () => window.setTheme('cyberpunk'); // Gọi hàm setTheme từ quiz.html
+            cyberBtn.onclick = () => window.setTheme('cyberpunk');
             switcher.appendChild(cyberBtn);
         }
     });
 
-
     /* =========================================
-       4. HIỆU ỨNG ÂM THANH (WEB AUDIO API)
+       2. ÂM THANH STUDIO (WEB AUDIO API V3)
        ========================================= */
     const AudioContext = window.AudioContext || window.webkitAudioContext;
     let audioCtx;
+    let isMobileGyroUnlocked = false;
 
-    function initAudio() {
+    function initAudioAndSensors() {
         if (!audioCtx) audioCtx = new AudioContext();
         if (audioCtx.state === 'suspended') audioCtx.resume();
+
+        // Xin quyền Gyroscope trên iPhone khi chạm màn hình lần đầu
+        if (!isMobileGyroUnlocked && typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function') {
+            DeviceOrientationEvent.requestPermission()
+                .then(response => { if (response === 'granted') isMobileGyroUnlocked = true; })
+                .catch(console.error);
+        }
     }
 
-    // Hàm tạo tiếng bíp điện tử
-    function playTone(freq, type, duration, vol=0.1) {
+    // Tiếng Ting trong vắt (Giống tiếng gõ ly thủy tinh)
+    function playPremiumTing() {
+        if (!audioCtx) return;
+        const osc1 = audioCtx.createOscillator();
+        const osc2 = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+
+        osc1.type = 'sine'; osc1.frequency.setValueAtTime(1200, audioCtx.currentTime);
+        osc2.type = 'triangle'; osc2.frequency.setValueAtTime(2400, audioCtx.currentTime);
+
+        gain.gain.setValueAtTime(0, audioCtx.currentTime);
+        gain.gain.linearRampToValueAtTime(0.5, audioCtx.currentTime + 0.02);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.8);
+
+        osc1.connect(gain); osc2.connect(gain); gain.connect(audioCtx.destination);
+        osc1.start(); osc2.start();
+        osc1.stop(audioCtx.currentTime + 1); osc2.stop(audioCtx.currentTime + 1);
+    }
+
+    // Tiếng Bụp trầm ấm (Giống tiếng đánh trống)
+    function playPremiumBup() {
         if (!audioCtx) return;
         const osc = audioCtx.createOscillator();
         const gain = audioCtx.createGain();
-        osc.type = type;
-        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
-        gain.gain.setValueAtTime(vol, audioCtx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.00001, audioCtx.currentTime + duration);
-        osc.connect(gain);
-        gain.connect(audioCtx.destination);
-        osc.start();
-        osc.stop(audioCtx.currentTime + duration);
+
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(200, audioCtx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(40, audioCtx.currentTime + 0.2);
+
+        gain.gain.setValueAtTime(0, audioCtx.currentTime);
+        gain.gain.linearRampToValueAtTime(0.4, audioCtx.currentTime + 0.01);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.2);
+
+        osc.connect(gain); gain.connect(audioCtx.destination);
+        osc.start(); osc.stop(audioCtx.currentTime + 0.2);
     }
 
-    // Tiếng Ting! (Đúng)
-    function playTing() {
-        initAudio();
-        playTone(880, 'sine', 0.1, 0.2); // Nốt A5
-        setTimeout(() => playTone(1318.51, 'sine', 0.3, 0.2), 100); // Nốt E6 ngân dài
+    // Tiếng vỗ tay rào rào (Mô phỏng bằng White Noise)
+    function playApplause() {
+        if (!audioCtx) return;
+        const bufferSize = audioCtx.sampleRate * 2.5; 
+        const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+        const data = buffer.getChannelData(0);
+        for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
+
+        const noise = audioCtx.createBufferSource();
+        noise.buffer = buffer;
+
+        const filter = audioCtx.createBiquadFilter();
+        filter.type = 'bandpass';
+        filter.frequency.value = 1000;
+        filter.Q.value = 0.5;
+
+        const gain = audioCtx.createGain();
+        gain.gain.setValueAtTime(0, audioCtx.currentTime);
+        gain.gain.linearRampToValueAtTime(0.5, audioCtx.currentTime + 0.2); 
+        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 2.5);
+
+        noise.connect(filter); filter.connect(gain); gain.connect(audioCtx.destination);
+        noise.start();
     }
 
-    // Tiếng Bụp (Sai)
-    function playBup() {
-        initAudio();
-        playTone(300, 'square', 0.1, 0.1);
-        setTimeout(() => playTone(150, 'square', 0.2, 0.1), 100);
+    /* =========================================
+       3. PHÁO HOA NỔ TUNG TÓE TẠI VỊ TRÍ CHUỘT
+       ========================================= */
+    function fireExplosiveConfetti(x, y) {
+        const colors = ['#39ff14', '#00ffff', '#ffea00', '#bc13fe', '#ff00ff'];
+        for (let i = 0; i < 40; i++) { 
+            const piece = document.createElement('div');
+            piece.className = 'magic-confetti';
+            piece.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+            piece.style.left = x + 'px';
+            piece.style.top = y + 'px';
+            
+            const angle = Math.random() * Math.PI * 2;
+            const velocity = 50 + Math.random() * 150; 
+            const tx = Math.cos(angle) * velocity;
+            const ty = Math.sin(angle) * velocity + 50; 
+            
+            piece.style.setProperty('--tx', `${tx}px`);
+            piece.style.setProperty('--ty', `${ty}px`);
+            
+            document.body.appendChild(piece);
+            setTimeout(() => piece.remove(), 1000); 
+        }
     }
 
-    // Tiếng Finish (Tèn Tén Ten)
-    function playFinish() {
-        initAudio();
-        [523.25, 659.25, 783.99, 1046.50].forEach((freq, i) => {
-            setTimeout(() => playTone(freq, 'sine', 0.4, 0.2), i * 150);
-        });
-    }
-
-    // Bắt sự kiện Click để phát âm thanh
-    // Bắt sự kiện Click để phát âm thanh
+    /* =========================================
+       4. BẮT SỰ KIỆN CLICK (TÍCH HỢP TẤT CẢ)
+       ========================================= */
     document.addEventListener('click', (e) => {
-        initAudio(); // Khởi tạo audio khi user tương tác
+        initAudioAndSensors();
 
-        // 1. BẮT ÂM THANH CHỌN ĐÁP ÁN
         const optionBtn = e.target.closest('.option-btn');
         if (optionBtn && !optionBtn.classList.contains('locked')) {
-            // Lấy ID câu hỏi từ thuộc tính onclick (VD: App.selectMCQ('r1q1','A'))
             const onclickAttr = optionBtn.getAttribute('onclick') || '';
             const match = onclickAttr.match(/'([^']+)'/); 
             
             if (match) {
                 const qId = match[1];
-                // Đợi 50ms để giao diện vẽ xong màu Xanh/Đỏ
                 setTimeout(() => {
                     const newCard = document.getElementById('q_' + qId);
                     if (newCard) {
-                        // Nếu thẻ mới có nút bị Đỏ -> Sai
                         if (newCard.querySelector('.option-btn.wrong')) {
-                            playBup();
-                        } 
-                        // Nếu có Xanh mà không có Đỏ -> Đúng
-                        else if (newCard.querySelector('.option-btn.correct')) {
-                            playTing();
+                            playPremiumBup();
+                        } else if (newCard.querySelector('.option-btn.correct')) {
+                            playPremiumTing();
+                            fireExplosiveConfetti(e.clientX, e.clientY);
                         }
                     }
                 }, 50);
             }
         }
 
-        // 2. BẮT ÂM THANH NÚT FINISH
         const finishBtn = e.target.closest('#btnNext');
         if (finishBtn && finishBtn.innerText.includes('Finish')) {
-            playFinish();
+            playApplause();
+        }
+
+        if (finishBtn && !finishBtn.innerText.includes('Finish')) {
+            const qBody = document.getElementById('quizBody');
+            if (qBody) {
+                qBody.style.animation = 'none';
+                setTimeout(() => qBody.style.animation = 'iosSlideIn 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) forwards', 10);
+            }
         }
     });
 
     /* =========================================
-       5. LOGIC CARD 3D TILT (Nghiêng theo chuột)
+       5. 3D TILT CHO CẢ MÁY TÍNH VÀ ĐIỆN THOẠI
        ========================================= */
     document.addEventListener('mousemove', (e) => {
-        // Chỉ chạy trên Desktop (màn hình to)
         if (window.innerWidth < 768) return; 
-        
-        const cards = document.querySelectorAll('.card');
-        cards.forEach(card => {
-            const rect = card.getBoundingClientRect();
-            // Chỉ nghiêng các thẻ đang hiển thị trên màn hình
-            if (rect.top > window.innerHeight || rect.bottom < 0) return;
-
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
-            
-            const centerX = rect.width / 2;
-            const centerY = rect.height / 2;
-            
-            const rotateX = ((y - centerY) / centerY) * -3; // Chỉnh số 3 để tăng/giảm độ nghiêng
-            const rotateY = ((x - centerX) / centerX) * 3;
-
-            card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.01, 1.01, 1.01)`;
-        });
-    });
-
-    // Reset thẻ khi chuột rời khỏi web
-    document.addEventListener('mouseleave', () => {
         document.querySelectorAll('.card').forEach(card => {
-            card.style.transform = `perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)`;
+            const rect = card.getBoundingClientRect();
+            if (rect.top > window.innerHeight || rect.bottom < 0) return;
+            const x = e.clientX - rect.left, y = e.clientY - rect.top;
+            const centerX = rect.width / 2, centerY = rect.height / 2;
+            const rotateX = ((y - centerY) / centerY) * -2; 
+            const rotateY = ((x - centerX) / centerX) * 2;
+            card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02, 1.02, 1.02)`;
         });
     });
 
-    console.log("🚀 Magic loaded: Sounds, 3D Tilt, Smooth Transitions & Cyberpunk theme is ready!");
+    document.addEventListener('mouseleave', () => {
+        document.querySelectorAll('.card').forEach(card => card.style.transform = 'none');
+    });
+
+    window.addEventListener('deviceorientation', (e) => {
+        if (!e.beta || !e.gamma) return; 
+        let tiltX = Math.max(-20, Math.min(20, e.beta - 45)); 
+        let tiltY = Math.max(-20, Math.min(20, e.gamma));     
+
+        document.querySelectorAll('.card').forEach(card => {
+            const rect = card.getBoundingClientRect();
+            if (rect.top > window.innerHeight || rect.bottom < 0) return;
+            card.style.transform = `perspective(1000px) rotateX(${-tiltX/2}deg) rotateY(${tiltY/2}deg)`;
+        });
+    });
+
+    console.log("🚀 Magic V3 Ultimate Loaded without Syntax Errors!");
 })();

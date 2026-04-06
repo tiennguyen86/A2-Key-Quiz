@@ -1644,37 +1644,64 @@
         /**
          * Handle MCQ selection
          */
+        // --- KHAI BÁO 3 FILE ÂM THANH XỊN (MP3) ---
+        const sfxCorrect = new Audio('https://assets.mixkit.co/active_storage/sfx/2000/2000-preview.mp3'); 
+        const sfxWrong = new Audio('https://assets.mixkit.co/active_storage/sfx/3148/3148-preview.mp3'); 
+        const sfxFinish = new Audio('https://assets.mixkit.co/active_storage/sfx/2003/2003-preview.mp3');
+
+        // --- HÀM CHỌN ĐÁP ÁN (ĐÃ UPDATE ÂM THANH) ---
         function selectMCQ(qId, letter) {
             if (state.answered[qId]) return;
-
-            state.answered[qId] = true;
+            
+            state.answered[qId] = true; 
             state.userAnswers[qId] = letter;
-
-            // Find the question to check correctness
-            const q = findQuestion(qId);
+            
+            const q = findQuestion(qId); 
             if (!q) return;
-
+            
             const isCorrect = letter === q.correctAnswer;
-            if (isCorrect) {
-                state.score++;
-                state.streak++;
-                if (state.streak > state.maxStreak) state.maxStreak = state.streak;
-            } else {
-                state.streak = 0;
-            }
-
-            updateUI();
-            renderTabs();
-
-            // Re-render just this question if instant feedback is on
-            if (state.settings.instantFeedback) {
-                rerenderQuestion(qId);
-                if (isCorrect && state.streak >= 3) {
-                    miniConfetti(document.getElementById(`q_${qId}`));
+            
+            // PHÁT ÂM THANH NGAY LẬP TỨC
+            try {
+                if (isCorrect) {
+                    sfxCorrect.currentTime = 0; // Trả về đầu file để bấm liên tục không bị lag
+                    sfxCorrect.play();
+                } else {
+                    sfxWrong.currentTime = 0;
+                    sfxWrong.play();
                 }
-            }
+            } catch(e) { console.log("Lỗi phát âm thanh"); }
 
+            // XỬ LÝ ĐIỂM
+            if (isCorrect) { 
+                state.score++; 
+                state.streak++; 
+                if (state.streak > state.maxStreak) state.maxStreak = state.streak; 
+            } else { 
+                state.streak = 0; 
+            }
+            
+            updateUI(); 
+            renderTabs();
+            
+            if (state.settings.instantFeedback) { 
+                rerenderQuestion(qId); 
+                if (isCorrect) fireConfetti(); // Bắn pháo hoa nếu đúng!
+            }
             saveProgress();
+        }
+
+        // --- CẬP NHẬT HÀM NEXT ĐỂ CÓ TIẾNG VỖ TAY KHI FINISH ---
+        function nextPart() {
+            if (state.currentPart < state.parts.length - 1) {
+                state.currentPart++; renderTabs(); renderPart(); scrollTo({ top: 0, behavior: 'smooth' }); saveProgress();
+            } else { 
+                try { 
+                    sfxFinish.currentTime = 0; 
+                    sfxFinish.play(); // Tiếng vỗ tay hoan hô!
+                } catch(e) {}
+                showResults(); 
+            }
         }
 
         /**

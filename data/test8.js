@@ -7,7 +7,7 @@
 
 const quizData = {
     title: "A2 Key Practice Test — Đề 8",
-    theme: "editorial",
+    theme: "gamified",
     parts: [
 
         // ============================================================
