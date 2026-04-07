@@ -1074,6 +1074,17 @@
          * Boot the app: load theme, check for saved progress, render landing
          */
         function init() {
+            // ✅ Check localStorage support (important for GitHub Pages)
+            try {
+                const test = '__storage_test__';
+                localStorage.setItem(test, test);
+                localStorage.removeItem(test);
+                console.log('✅ localStorage is available');
+            } catch (e) {
+                console.error('❌ localStorage not available:', e);
+                alert('Warning: Your browser does not support localStorage. Progress will not be saved.');
+            }
+
             // Validate data exists
             if (typeof quizData === 'undefined' || !quizData.parts) {
                 document.getElementById('pgLanding').innerHTML =
@@ -1524,7 +1535,7 @@
             // Edit button (only if instant feedback is on and question is answered)
             let editHTML = '';
             if (isDone && showFeedback) {
-                editHTML = `<div class="edit-btn" onclick="App.editAnswer('${q.id}')">✏️ Edit answer</div>`;
+                editHTML = `<div class="edit-btn" onclick="App.editAnswer('${q.id}')" title="Click to change your answer">✏️ Edit answer</div>`;
             }
 
             card.innerHTML = `
@@ -1752,28 +1763,41 @@
          * Edit a previously answered question
          */
         function editAnswer(qId) {
-            // Un-answer the question
+            // ✅ Check if question was actually answered
+            if (!state.answered[qId]) {
+                console.warn(`Question ${qId} was not answered yet`);
+                return;
+            }
+
             const q = findQuestion(qId);
             if (!q) return;
 
-            // If it was correct, subtract score
-            if (q.correctAnswer && state.userAnswers[qId] === q.correctAnswer) {
-                state.score--;
-            } else if (q.acceptableAnswers) {
-                const ua = state.userAnswers[qId] || '';
-                if (q.acceptableAnswers.some(a => a.toLowerCase() === ua.toLowerCase())) {
-                    state.score--;
-                }
+            // ✅ Always subtract score if it was correct (regardless of question type)
+            const userAns = state.userAnswers[qId];
+            let wasCorrect = false;
+
+            if (q.correctAnswer && userAns === q.correctAnswer) {
+                wasCorrect = true;
+            } else if (q.acceptableAnswers && userAns) {
+                wasCorrect = q.acceptableAnswers.some(a => a.toLowerCase() === userAns.toLowerCase());
             }
 
+            if (wasCorrect) {
+                state.score--;
+            }
+
+            // ✅ Reset question state
             delete state.answered[qId];
             delete state.userAnswers[qId];
             state.streak = 0;
 
+            // ✅ Update UI and save
             updateUI();
             renderTabs();
             rerenderQuestion(qId);
             saveProgress();
+
+            console.log(`Edited answer for ${qId}, was correct: ${wasCorrect}`);
         }
 
         /**
@@ -2334,6 +2358,9 @@
             showReview,
         };
     })();
+
+    // ✅ Expose App globally for debugging
+    window.App = App;
 
     // =============================================
     // THEME SWITCHER (Global)
