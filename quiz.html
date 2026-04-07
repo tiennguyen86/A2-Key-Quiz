@@ -1637,7 +1637,12 @@
                 </div>
                 ${q.sampleAnswer ? `
                     <div class="sample-toggle" onclick="App.toggleSample('${q.id}')">
-                        <i class="fas fa-lightbulb"></i> View Sample Answer
+                        <i class="fas fa-lightbulb"></i>console.log('Answered questions:', Object.keys(App.state?.answered || {}));
+VM101:2 App available: object
+VM101:5 instantFeedback: undefined
+VM101:10 localStorage works: working
+VM101:16 Answered questions: []
+undefined View Sample Answer
                     </div>
                     <div class="sample-box" id="sample_${q.id}">
                         <strong>📝 Sample Answer:</strong><br><br>
@@ -2337,6 +2342,10 @@
         // PUBLIC API
         // =============================================
         return {
+            // State for debugging
+            state,
+            
+            // Methods
             init,
             startQuiz,
             startFresh,
