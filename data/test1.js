@@ -542,7 +542,7 @@ const quizData = {
                         { letter: "B", text: "£35" },
                         { letter: "C", text: "£70" }
                     ],
-                    correctAnswer: "B",
+                    correctAnswer: "A",
                     explanation: "The total cost of the meal is £35."
                 },
                 {
@@ -568,7 +568,7 @@ const quizData = {
                         { letter: "B", text: "Trousers/pants (quần dài)" },
                         { letter: "C", text: "A polo shirt (áo phông có cổ)" }
                     ],
-                    correctAnswer: "B",
+                    correctAnswer: "A",
                     explanation: "The man says he needs to buy new trousers."
                 },
                 {
@@ -581,7 +581,7 @@ const quizData = {
                         { letter: "B", text: "Snowy ❄️ (có tuyết)" },
                         { letter: "C", text: "Rainy 🌧️ (mưa)" }
                     ],
-                    correctAnswer: "C",
+                    correctAnswer: "A",
                     explanation: "It was rainy at the weekend."
                 }
             ]
@@ -609,7 +609,7 @@ const quizData = {
                     type: "fill-in",
                     text: "Where: the ___ Museum",
                     hint: "What type of museum?",
-                    acceptableAnswers: ["science", "Science"],
+                    acceptableAnswers: ["Music", "music"],
                     explanation: "The teacher says they will visit the Science Museum."
                 },
                 {
@@ -617,7 +617,7 @@ const quizData = {
                     type: "fill-in",
                     text: "Time we leave: ___ a.m.",
                     hint: "A time in the morning",
-                    acceptableAnswers: ["9", "9:00", "nine"],
+                    acceptableAnswers: ["8.30", ],
                     explanation: "They leave at 9 a.m."
                 },
                 {
@@ -625,7 +625,7 @@ const quizData = {
                     type: "fill-in",
                     text: "Meet at the: ___",
                     hint: "Where do buses usually park at school?",
-                    acceptableAnswers: ["car park", "carpark", "car-park", "gate", "entrance"],
+                    acceptableAnswers: ["library", "Library"],
                     explanation: "Students should meet at the car park."
                 },
                 {
@@ -633,7 +633,7 @@ const quizData = {
                     type: "fill-in",
                     text: "Bring: ___",
                     hint: "What do you eat at midday?",
-                    acceptableAnswers: ["lunch", "a lunch", "packed lunch", "sandwiches"],
+                    acceptableAnswers: ["Snacks", "snacks"],
                     explanation: "Students need to bring their own lunch."
                 },
                 {
@@ -641,7 +641,7 @@ const quizData = {
                     type: "fill-in",
                     text: "Cost: £___",
                     hint: "A number",
-                    acceptableAnswers: ["5", "five", "5.00"],
+                    acceptableAnswers: ["6.50"],
                     explanation: "The trip costs £5."
                 }
             ]
