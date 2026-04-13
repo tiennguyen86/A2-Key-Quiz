@@ -692,7 +692,7 @@ const quizData = {
                         { letter: "B", text: "fizzy drinks" },
                         { letter: "C", text: "sweets" }
                     ],
-                    correctAnswer: "B",
+                    correctAnswer: "C",
                     explanation: "They need to pay for fizzy drinks — the tickets and snacks are covered."
                 },
                 {
@@ -743,7 +743,7 @@ const quizData = {
                         { letter: "B", text: "It couldn't be repaired." },
                         { letter: "C", text: "It was slow." }
                     ],
-                    correctAnswer: "B",
+                    correctAnswer: "A",
                     explanation: "The woman sold her car because it couldn't be repaired — the mechanic said it was beyond fixing."
                 },
                 {
@@ -769,7 +769,7 @@ const quizData = {
                         { letter: "B", text: "a summer holiday" },
                         { letter: "C", text: "a swimming competition" }
                     ],
-                    correctAnswer: "B",
+                    correctAnswer: "A",
                     explanation: "The video is of their summer holiday."
                 },
                 {
@@ -795,7 +795,7 @@ const quizData = {
                         { letter: "B", text: "clothes" },
                         { letter: "C", text: "jewellery" }
                     ],
-                    correctAnswer: "C",
+                    correctAnswer: "B",
                     explanation: "The woman received jewellery as a present."
                 }
             ]
@@ -828,7 +828,7 @@ const quizData = {
                     type: "matching",
                     text: "Marco will help with: ___ (write the letter A-H)",
                     hint: "One letter from A to H",
-                    acceptableAnswers: ["G", "g"],
+                    acceptableAnswers: ["H", "h"],
                     explanation: "Marco will help with tickets (G)."
                 },
                 {
@@ -844,7 +844,7 @@ const quizData = {
                     type: "matching",
                     text: "Robert will help with: ___ (write the letter A-H)",
                     hint: "One letter from A to H",
-                    acceptableAnswers: ["H", "h"],
+                    acceptableAnswers: ["E", "e"],
                     explanation: "Robert will help with singers (H)."
                 },
                 {
@@ -852,7 +852,7 @@ const quizData = {
                     type: "matching",
                     text: "Ivanna will help with: ___ (write the letter A-H)",
                     hint: "One letter from A to H",
-                    acceptableAnswers: ["E", "e"],
+                    acceptableAnswers: ["B", "b"],
                     explanation: "Ivanna will help with instruments (E)."
                 },
                 {
@@ -860,7 +860,7 @@ const quizData = {
                     type: "matching",
                     text: "Diego will help with: ___ (write the letter A-H)",
                     hint: "One letter from A to H",
-                    acceptableAnswers: ["D", "d"],
+                    acceptableAnswers: ["G", "g"],
                     explanation: "Diego will help with dancers (D)."
                 }
             ]
