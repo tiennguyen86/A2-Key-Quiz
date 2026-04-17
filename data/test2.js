@@ -611,7 +611,7 @@ const quizData = {
                         { letter: "B", text: "A man with a beard, no glasses" },
                         { letter: "C", text: "A bald man with a beard and glasses" }
                     ],
-                    correctAnswer: "A",
+                    correctAnswer: "B",
                     explanation: "(Need audio to confirm exactly, based on provided marking it's A)"
                 },
                 {
@@ -693,7 +693,7 @@ const quizData = {
                     type: "fill-in",
                     text: "Price: £___",
                     hint: "A number",
-                    acceptableAnswers: ["1200"],
+                    acceptableAnswers: ["4200"],
                     explanation: "(Based on handwritten notes: 1200)"
                 },
                 {
@@ -912,7 +912,7 @@ const quizData = {
                     type: "matching",
                     text: "Daniel wants to try: ___ (A-H)",
                     hint: "One letter",
-                    acceptableAnswers: ["F", "f"],
+                    acceptableAnswers: ["E", "e"],
                     explanation: "(Based on marking: F - skiing)"
                 },
                 {
